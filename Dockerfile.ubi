@@ -22,4 +22,4 @@ FROM quay.io/centos/centos:stream9-minimal AS release
 RUN microdnf install -y --nodocs --setopt=install_weak_deps=0 openssl-libs libgcc
 USER 1000
 COPY --from=builder /target/release/ /usr/local/bin/
-CMD [ "/usr/local/bin/zeronsd" ]
+CMD [ "/usr/local/bin/zeronsd", "start" ]
