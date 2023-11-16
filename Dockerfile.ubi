@@ -19,7 +19,7 @@ RUN cargo build --release
 #   <network id>
 
 FROM quay.io/centos/centos:stream9-minimal AS release
-RUN microdnf install -y --nodocs --setopt=install_weak_deps=0 openssl-libs libgcc bind-utils && \
+RUN microdnf install -y --nodocs --setopt=install_weak_deps=0 openssl-libs libgcc bind-utils sudo && \
     microdnf clean all
 USER 1000
 COPY --from=builder /target/release/ /usr/local/bin/
