@@ -1,7 +1,25 @@
 # vim: ft=dockerfile
-FROM redhat/ubi8
+FROM quay.io/centos/centos:stream9-minimal AS builder
 
-RUN dnf install openssl-devel gcc -y
-RUN curl -sSL sh.rustup.rs >/tmp/rustup.sh && bash /tmp/rustup.sh -y
-ENV PATH=${PATH}:${HOME}/.cargo/bin
-RUN . /root/.cargo/env && cargo install cargo-generate-rpm
+COPY . .
+
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+ENV PATH=/root/.cargo/bin:${PATH}
+
+RUN microdnf install -y --nodocs openssl-devel openssl-libs gcc
+RUN cargo build --release
+
+
+# to run:
+#
+# docker run --net host -it \
+#   -v /var/lib/zerotier-one/authtoken.secret:/authtoken.secret \
+#   -v <token file>:/token.txt \
+#   zeronsd:alpine start -s /authtoken.secret -t /token.txt \
+#   <network id>
+
+FROM quay.io/centos/centos:stream9-minimal AS release
+RUN microdnf install -y --nodocs --setopt=install_weak_deps=0 openssl-libs libgcc
+USER 1000
+COPY --from=builder /target/release/ /usr/local/bin/
+CMD [ "/usr/local/bin/zeronsd" ]

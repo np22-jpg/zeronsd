@@ -1,0 +1,27 @@
+{
+    "extends": [
+        "config:base",
+        "helpers:pinGitHubActionDigests",
+        ":semanticCommits"
+      ],
+    "automerge": true,
+    "automergeType": "pr",
+    "platformAutomerge": true,
+    "lockFileMaintenance": {
+      "enabled": true
+    },
+    "pinDigests": true,
+    "packageRules": [
+      {
+        "matchManagers": ["cargo"],
+        "updateTypes": ["lockFileMaintenance"],
+        "automerge": true
+      },
+      {
+        "matchManagers": ["dockerfile", "github-actions"],
+        "updateTypes": ["digest"],
+        "automerge": true
+      }
+    ]
+  }
+  
