@@ -21,6 +21,7 @@ RUN cargo build --release
 FROM quay.io/centos/centos:stream9-minimal AS release
 RUN microdnf install -y --nodocs --setopt=install_weak_deps=0 openssl-libs libgcc bind-utils sudo && \
     microdnf clean all
-USER 1000
+# USER 1000
 COPY --from=builder /target/release/ /usr/local/bin/
-CMD [ "/usr/local/bin/zeronsd", "start" ]
+ENTRYPOINT [ "/usr/local/bin/zeronsd" ]
+CMD [ "help" ]
